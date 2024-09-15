@@ -1,0 +1,10 @@
+1.Requirement Gathering
+2.Planning
+3.Report
+4.Figma
+5.DB Design
+6.Frontend using HTML,CSS
+7.Backend using python, Django
+8.Integrating PowerBI
+
+Digitalize Records 
