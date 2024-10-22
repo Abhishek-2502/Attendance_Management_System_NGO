@@ -5,6 +5,51 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attendance | Akshar Paaul</title>
     <link rel="stylesheet" href="styles.css">
+    <script>
+        // Separate dummy databases for teachers and admins
+        const teacherDatabase = {
+            'teacherUser1': 'password123',
+            'teacherUser2': 'teacherPass'
+        };
+
+        const adminDatabase = {
+            'adminUser1': 'adminPassword',
+            'adminUser2': 'adminPass'
+        };
+
+        // Function to handle login form submission
+        function handleLogin(event) {
+            event.preventDefault(); // Prevent the form from submitting
+
+            const username = document.querySelector('input[placeholder="Username"]').value;
+            const password = document.querySelector('input[placeholder="Password"]').value;
+            const role = document.querySelector('input[name="role"]:checked').id; // Get selected role (teacher/admin)
+
+            // Check which database to use based on the selected role
+            let userDatabase = (role === 'teacher') ? teacherDatabase : adminDatabase;
+
+            // Check if username exists in the selected database and if the password matches
+            if (userDatabase[username] && userDatabase[username] === password) {
+                // Store logged-in user in localStorage
+                localStorage.setItem('loggedInUser', username);
+                localStorage.setItem('userRole', role); // Store the user's role (teacher/admin)
+
+                // Redirect to sheet.html if credentials are correct
+                window.location.href = "sheet.html";
+            } else {
+                // Show error message if login fails
+                alert('Invalid username or password!');
+            }
+        }
+
+        // Clear the login fields and session on page load
+        window.onload = function() {
+            localStorage.removeItem('loggedInUser'); // Clear logged-in user
+            localStorage.removeItem('userRole'); // Clear role
+            document.querySelector('input[placeholder="Username"]').value = '';
+            document.querySelector('input[placeholder="Password"]').value = '';
+        }
+    </script>
 </head>
 <body>
     <header>
@@ -19,7 +64,7 @@
             </div>
 
             <div class="right-section">
-                <form class="login-form">
+                <form class="login-form" onsubmit="handleLogin(event)">
                     <div class="radio-group">
                         <input type="radio" id="teacher" name="role" checked>
                         <label for="teacher">Teacher</label>

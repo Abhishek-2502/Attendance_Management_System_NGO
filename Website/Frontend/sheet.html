@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Attendify - Attendance</title>
+    <link rel="stylesheet" href="stylessheet.css">
+    <script>
+        // Function to handle user logout
+        function logout() {
+            // Clear session storage (or localStorage, depending on how you're managing sessions)
+            localStorage.removeItem('loggedInUser'); // Clear any session data
+
+            // Redirect to login page
+            window.location.href = "index.html";
+        }
+
+        // Prevent going back to the sheet.html page after logging out
+        window.onload = function() {
+            if (!localStorage.getItem('loggedInUser')) {
+                // If no user is logged in, redirect to the login page
+                window.location.href = "index.html";
+            }
+
+            // Disable back navigation after logging out
+            window.history.pushState(null, "", window.location.href);
+            window.onpopstate = function() {
+                window.history.pushState(null, "", window.location.href);
+            };
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h1>Attendify</h1>
+            </div>
+            <ul class="sidebar-menu">
+                <li><a href="#" class="active"><i class="icon">&#128203;</i> Attendance Sheet</a></li>
+                <li><a href="#"><i class="icon">&#128202;</i> Dashboard</a></li>
+                <li><a href="#"><i class="icon">&#128196;</i> Report</a></li>
+                <li><a href="javascript:void(0)" onclick="logout()"><i class="icon">&#128275;</i> Logout</a></li>
+            </ul>
+        </aside>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <header class="header">
+                <h2 class="header-title">Attendance</h2>
+                <div class="header-icons">
+                    <div class="user-info">
+                        <span class="username">Praful</span>
+                        <img src="user-avatar.png" alt="User Avatar" class="user-avatar">
+                    </div>
+                </div>
+            </header>
+
+            <div class="content">
+                <div class="form-container">
+                    <form action="#" method="post">
+                        <div class="form-group">
+                            <label for="class">Class</label>
+                            <select id="class" name="class">
+                                <option value="3">3</option>
+                                <!-- Add more class options here -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="section">Section</label>
+                            <select id="section" name="section">
+                                <option value="A">A</option>
+                                <!-- Add more section options here -->
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="date">Date</label>
+                            <input type="date" id="date" name="date" value="2023-03-15">
+                        </div>
+
+                        <button type="submit" class="btn-generate">Generate Sheet</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
