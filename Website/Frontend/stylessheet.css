@@ -28,7 +28,6 @@ body {
     margin-bottom: 30px;
 }
 
-
 .sidebar-menu {
     list-style: none;
 }
@@ -116,42 +115,79 @@ body {
 
 .form-container {
     background-color: #f9f9f9;
-    padding: 20px;
+    padding: 30px; /* Increased padding for better spacing */
     border-radius: 10px;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 25px; /* Increased margin for better spacing */
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 10px;
+    margin-bottom: 8px; /* Slightly reduced margin for compactness */
     font-size: 1rem;
     color: #333;
 }
 
 .form-group select,
-.form-group input[type="date"] {
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="number"] { /* Added input[type="number"] */
     width: 100%;
     padding: 10px;
     font-size: 1rem;
     border-radius: 5px;
     border: 1px solid #ccc;
+    transition: border-color 0.3s ease; /* Smooth transition for focus effect */
+}
+
+.form-group select:hover,
+.form-group input[type="text"]:hover,
+.form-group input[type="date"]:hover,
+.form-group input[type="number"]:hover {
+    border-color: #0d2c75; /* Change border color on hover */
+}
+
+.form-group select:focus,
+.form-group input[type="text"]:focus,
+.form-group input[type="date"]:focus,
+.form-group input[type="number"]:focus {
+    border-color: #3567e6; /* Change border color on focus */
+    outline: none; /* Remove outline for better appearance */
 }
 
 .btn-generate {
-    padding: 10px 20px;
+    padding: 12px 24px; /* Adjusted padding for better button size */
     background-color: #0d2c75;
     color: white;
     border: none;
     border-radius: 5px;
     font-size: 1rem;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Added transform effect */
 }
 
 .btn-generate:hover {
     background-color: #3567e6;
+}
+
+.btn-generate:active {
+    transform: scale(0.95); /* Button press effect */
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px; /* Reduced width for smaller screens */
+    }
+
+    .header-title {
+        font-size: 1.4rem;
+    }
+
+    .btn-generate {
+        width: 100%; /* Make button full width on small screens */
+    }
 }
