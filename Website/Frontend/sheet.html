@@ -5,11 +5,86 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Attendify - Attendance</title>
     <link rel="stylesheet" href="stylessheet.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script> <!-- XLSX library -->
+
     <script>
         // Function to handle user logout
         function logout() {
             localStorage.removeItem('loggedInUser'); // Clear any session data
             window.location.href = "index.html"; // Redirect to login page
+        }
+
+        // Function to set the active link in the sidebar
+        function setActiveLink(activeId) {
+            const links = document.querySelectorAll('.sidebar-menu li a');
+            links.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('data-link') === activeId) {
+                    link.classList.add('active');
+                }
+            });
+        }
+
+        // Function to load the default attendance sheet form with an upload button
+        function loadDefaultAttendanceForm() {
+            document.getElementById("form-container").innerHTML = `
+                <div class="form-group">
+                    <label for="attendance-file">Upload Attendance Excel File</label>
+                    <input type="file" id="attendance-file" accept=".xlsx, .xls" onchange="handleFileUpload(event)">
+                </div>
+                <button class="btn-generate" onclick="previewAttendance()">Preview Sheet</button>
+                <div id="preview-table"></div> <!-- Placeholder for the preview table -->
+            `;
+            document.querySelector('.header-title').textContent = 'Attendance Sheet';
+            setActiveLink('attendance');
+        }
+
+        // Function to handle file upload and preview data
+        let attendanceData = []; // Store the parsed Excel data
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+                attendanceData = XLSX.utils.sheet_to_json(firstSheet); // Convert sheet to JSON
+            };
+
+            reader.readAsArrayBuffer(file);
+        }
+
+        // Function to preview the attendance data (only student ID, name, and status)
+        function previewAttendance() {
+            const previewTable = document.getElementById("preview-table");
+            if (attendanceData.length === 0) {
+                previewTable.innerHTML = `<p>No data to display. Please upload a valid Excel file.</p>`;
+                return;
+            }
+
+            // Generate table for Student ID, Name, and Status
+            let tableHTML = `<table border="1">
+                                <thead>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <th>Student Name</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>`;
+            
+            attendanceData.forEach(row => {
+                tableHTML += `<tr>
+                                <td>${row['Student ID'] || 'N/A'}</td>
+                                <td>${row['Student Name'] || 'N/A'}</td>
+                                <td>${row['Status'] || 'N/A'}</td>
+                              </tr>`;
+            });
+
+            tableHTML += `</tbody></table>`;
+            previewTable.innerHTML = tableHTML; // Set the generated table to the preview div
         }
 
         // Function to load the report form
@@ -71,27 +146,19 @@
                     <button type="submit" class="btn-generate">Generate Report</button>
                 </form>
             `;
-            // Update header title
             document.querySelector('.header-title').textContent = 'Report';
-            // Update active link
             setActiveLink('report');
-        }
-
-        // Function to set the active link in the sidebar
-        function setActiveLink(activeId) {
-            const links = document.querySelectorAll('.sidebar-menu li a');
-            links.forEach(link => {
-                link.classList.remove('active');
-                if (link.getAttribute('data-link') === activeId) {
-                    link.classList.add('active');
-                }
-            });
         }
 
         // Prevent going back to the sheet.html page after logging out
         window.onload = function() {
-            if (!localStorage.getItem('loggedInUser')) {
-                window.location.href = "index.html";
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            
+            if (!loggedInUser) {
+                window.location.href = "index.html"; // Redirect to login page if not logged in
+            } else {
+                // Set the username in the header
+                document.querySelector('.username').textContent = loggedInUser;
             }
 
             window.history.pushState(null, "", window.location.href);
@@ -101,48 +168,6 @@
 
             // Load default attendance sheet form on initial load
             loadDefaultAttendanceForm();
-        }
-
-        // Function to load the default attendance sheet form
-        function loadDefaultAttendanceForm() {
-            document.getElementById("form-container").innerHTML = `
-                <form action="#" method="post">
-                    <div class="form-group">
-                        <label for="class">Class</label>
-                        <select id="class" name="class">
-                            <option value="1">1</option>
-                            <option value="2">2</option>
-                            <option value="3">3</option>
-                            <option value="4">4</option>
-                            <option value="5">5</option>
-                            <option value="6">6</option>
-                            <option value="7">7</option>
-                            <option value="8">8</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="section">Section</label>
-                        <select id="section" name="section">
-                            <option value="A">A</option>
-                            <option value="B">B</option>
-                            <option value="C">C</option>
-                            <option value="D">D</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="date">Date</label>
-                        <input type="date" id="date" name="date" value="2023-03-15">
-                    </div>
-
-                    <button type="submit" class="btn-generate">Preview Sheet</button>
-                </form>
-            `;
-            // Update header title
-            document.querySelector('.header-title').textContent = 'Attendance Sheet';
-            // Update active link
-            setActiveLink('attendance');
         }
     </script>
 </head>
@@ -166,7 +191,7 @@
                 <h2 class="header-title">Attendance</h2>
                 <div class="header-icons">
                     <div class="user-info">
-                        <span class="username">Praful</span>
+                        <span class="username">Praful</span> <!-- This will be replaced dynamically -->
                         <img src="avatar2.png" alt="User Avatar" class="user-avatar">
                     </div>
                 </div>
